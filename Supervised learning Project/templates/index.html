@@ -1,0 +1,83 @@
+<head>
+    <script src="./static/jquery-3.6.4.js" ></script>
+    <script>
+        $(document).ready(()=>{
+            $('#imgPanel').hide();
+
+            $('#lr').click(()=> {
+                predict(0);
+            });
+            $('#dt').click(()=> {
+                predict(1);
+            });
+            $('#rf').click(()=> {
+                predict(2);
+            });
+            $('#nn').click(()=> {
+                predict(3);
+            });
+        });
+        
+        function predict(i){
+            var api = "http://127.0.0.1:8080/predict/" + i;
+            $('#tblPanel').hide();
+            $('#imgPanel').hide();
+            $.get(api, function(data, status){
+                console.log(data);
+                var result = "<table border='1'>";
+                $.each(data, function(key,value){
+                    result += "<tr><td>model:</td><td>";
+                    result += value.a_name + "</td></tr>";
+                    result += "<tr><td>accuracy:</td><td>";
+                    result += value.accuracy + "</td></tr>";
+                    result += "<tr><td>precision:</td><td>";
+                    result += value.precision + "</td></tr>";
+                    result += "<tr><td>recall:</td><td>";
+                    result += value.recall + "</td></tr>";
+                    result += "<tr><td>f1_score:</td><td>";
+                    result += value.f1_score + "</td></tr>";
+                    result += "<tr><td>confusion_matrix:</td><td>";
+                    result += value.confusion_matrix + "</td></tr>";
+                });
+                result += "</table>";
+                $('#tblPanel').html(result);
+                $('#tblPanel').toggle(500);
+                $('#imgPanel').toggle(500);
+                $('#imgroc').attr('src','./static/roc_' + i + '.png');
+
+            });
+        }
+           
+
+  
+    </script>
+</head> 
+
+<body>
+    <div>
+        <table border="1">
+            <tr>
+                <th>LogisticRegression</th>
+                <th>DecisionTree</th>
+                <th>RandomForest</th>
+                <th>NeuralNetwork</th>
+            </tr>
+            <tr>
+                <td><img src='./static/lr.png' width="200" height="200" /></td>
+                <td><img src='./static/bt.png' width="200" height="200"/></td>
+                <td><img src='./static/rf.png' width="200" height="200"/></td>
+                <td><img src='./static/nn.png' width="200" height="200"/></td>
+            </tr>
+            <tr>
+                <td><button id="lr">click me</button></td>
+                <td><button id="dt">click me</button></td>
+                <td><button id="rf">click me</button></td>
+                <td><button id="nn">click me</button></td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <div id="tblPanel"></div>
+    <br />
+    <div id="imgPanel"><img id="imgroc" width="600" height="600"></img></div>
+</body>
